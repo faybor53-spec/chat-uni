@@ -106,6 +106,7 @@ export default function App() {
   };
 
   const handleLogout = () => {
+    socket.disconnect();
     setCurrentUser(null);
     setToken(null);
     localStorage.removeItem('chatToken');

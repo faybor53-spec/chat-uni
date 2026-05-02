@@ -35,6 +35,11 @@ pool.on('error', (err) => {
   console.error('Error inesperado en la base de datos:', err);
 });
 
+// Health Check para Render/Monitoreo
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 const JWT_SECRET = process.env.JWT_SECRET;
 
 function authMiddleware(req, res, next) {
