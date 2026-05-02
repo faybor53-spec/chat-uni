@@ -23,6 +23,13 @@ const pool = new Pool({
   ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
 
+// Verificar conexión a la base de datos al iniciar
+pool.connect((err, client, release) => {
+  if (err) return console.error('Error adquiriendo cliente de base de datos:', err.stack);
+  console.log('Conectado a PostgreSQL en Supabase correctamente');
+  release();
+});
+
 // Manejador de errores para evitar caídas del servidor
 pool.on('error', (err) => {
   console.error('Error inesperado en la base de datos:', err);
