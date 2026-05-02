@@ -20,7 +20,10 @@ const io = new Server(server, { cors: { origin: allowedOrigin } });
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
+  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
+  max: 20, // máximo de conexiones simultáneas
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
 });
 
 // Verificar conexión a la base de datos al iniciar
