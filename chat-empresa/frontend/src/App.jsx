@@ -322,7 +322,7 @@ export default function App() {
                 // Buscamos el nombre del remitente en la lista de contactos o usamos el nuestro si somos nosotros
                 const senderName = isMe 
                   ? currentUser.username 
-                  : (contacts.find(c => c.id === msg.sender_id)?.username || 'Usuario');
+                  : (msg.sender_name || 'Usuario');
 
                 return (
                   <div key={index} style={{ alignSelf: isMe ? 'flex-end' : 'flex-start', maxWidth: '65%', marginBottom: '12px' }}>

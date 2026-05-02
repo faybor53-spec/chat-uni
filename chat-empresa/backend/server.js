@@ -129,11 +129,13 @@ app.get('/api/users', authMiddleware, async (req, res) => {
 app.get('/api/messages', authMiddleware, async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT * FROM messages 
-       WHERE receiver_id IS NULL 
-       OR sender_id = $1 
-       OR receiver_id = $1 
-       ORDER BY created_at ASC`,
+      `SELECT m.*, u.username as sender_name 
+       FROM messages m 
+       JOIN users u ON m.sender_id = u.id 
+       WHERE m.receiver_id IS NULL 
+       OR m.sender_id = $1 
+       OR m.receiver_id = $1 
+       ORDER BY m.created_at ASC`,
       [req.user.id]);
     res.json(result.rows);
   } catch (error) {
