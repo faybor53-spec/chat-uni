@@ -23,6 +23,11 @@ const pool = new Pool({
   ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
 
+// Manejador de errores para evitar caídas del servidor
+pool.on('error', (err) => {
+  console.error('Error inesperado en la base de datos:', err);
+});
+
 const JWT_SECRET = process.env.JWT_SECRET;
 
 function authMiddleware(req, res, next) {
