@@ -319,10 +319,9 @@ export default function App() {
             <div style={{ flex: 1, padding: '20px 24px', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
               {getDisplayedMessages().map((msg, index) => {
                 const isMe = msg.sender_id === currentUser.id;
-                // Buscamos el nombre del remitente en la lista de contactos o usamos el nuestro si somos nosotros
-                const senderName = isMe 
-                  ? currentUser.username 
-                  : (msg.sender_name || 'Usuario');
+                
+                // Priorizar el nombre que viene del JOIN en el backend o buscar en contactos
+                const senderName = isMe ? 'Tú' : (msg.sender_name || contacts.find(c => c.id === msg.sender_id)?.username || 'Usuario');
 
                 return (
                   <div key={index} style={{ alignSelf: isMe ? 'flex-end' : 'flex-start', maxWidth: '65%', marginBottom: '12px' }}>

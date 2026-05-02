@@ -197,7 +197,16 @@ io.on('connection', (socket) => {
   });
 });
 
+// Manejo de cierre limpio para despliegues en la nube (SIGTERM)
+process.on('SIGTERM', () => {
+  console.log('Recibida señal SIGTERM. Cerrando servidor...');
+  server.close(() => {
+    pool.end(() => console.log('Pool de conexiones a DB cerrado.'));
+    process.exit(0);
+  });
+});
+
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
+  console.log(`>>> Servidor de Chat listo en el puerto ${PORT}`);
 });
