@@ -125,7 +125,13 @@ app.get('/api/users', authMiddleware, async (req, res) => {
 // Obtener historial de mensajes (requiere autenticacion)
 app.get('/api/messages', authMiddleware, async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM messages ORDER BY created_at ASC');
+    const result = await pool.query(
+      `SELECT * FROM messages 
+       WHERE receiver_id IS NULL 
+       OR sender_id = $1 
+       OR receiver_id = $1 
+       ORDER BY created_at ASC`,
+      [req.user.id]);
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ error: error.message });

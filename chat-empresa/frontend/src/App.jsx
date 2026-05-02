@@ -100,7 +100,8 @@ export default function App() {
       } else {
         setLoginError(data.message || 'Credenciales inválidas');
       }
-    } catch {
+    } catch (err) {
+      console.error('Error de login:', err);
       setLoginError('No se pudo conectar con el servidor');
     }
   };
