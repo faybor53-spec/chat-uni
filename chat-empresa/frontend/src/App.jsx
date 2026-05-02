@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 
-const BACKEND = 'http://localhost:4000';
+const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
 const socket = io(BACKEND, { autoConnect: false });
 
 export default function App() {
