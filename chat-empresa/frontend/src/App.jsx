@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 
 const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
-const socket = io(BACKEND, { autoConnect: false });
+let socket;
 
 export default function App() {
   const [token, setToken] = useState(() => localStorage.getItem('chatToken'));
@@ -43,6 +43,9 @@ export default function App() {
 
     const headers = { Authorization: `Bearer ${token}` };
 
+    if (!socket) {
+      socket = io(BACKEND, { autoConnect: false });
+    }
     socket.auth = { token };
     socket.connect();
 
