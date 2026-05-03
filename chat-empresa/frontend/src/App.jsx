@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 
 const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
+console.log("Intentando conectar al Backend en:", BACKEND);
 let socket;
 
 export default function App() {
@@ -46,6 +47,10 @@ export default function App() {
     if (!socket) {
       socket = io(BACKEND, { autoConnect: false });
     }
+
+    // Evitar reconexiones innecesarias si el socket ya está activo
+    if (socket.connected) return;
+
     socket.auth = { token };
     socket.connect();
 

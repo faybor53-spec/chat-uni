@@ -12,8 +12,12 @@ const app = express();
 // Útil para servidores detrás de proxies (Railway, Zeabur, Render)
 app.set('trust proxy', 1);
 
-// En producción, podrás cambiar '*' por tu URL de Vercel
-const allowedOrigin = process.env.FRONTEND_URL || '*';
+// Definir orígenes permitidos (puedes añadir localhost para pruebas)
+const frontendUrl = process.env.FRONTEND_URL?.replace(/\/$/, ""); // Elimina barra final si existe
+const allowedOrigins = [frontendUrl, 'http://localhost:5173', 'http://localhost:3000', 'http://localhost:4000'].filter(Boolean);
+
+// Si no hay FRONTEND_URL definida, permitimos todos para facilitar la primera conexión en la nube
+const allowedOrigin = frontendUrl ? allowedOrigins : '*';
 
 app.use(cors({ origin: allowedOrigin }));
 app.use(express.json());
@@ -25,7 +29,7 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
   max: 20, // máximo de conexiones simultáneas
-  idleTimeoutMillis: 30000,
+  idleTimeoutMillis: 60000, // Aumentado a 60s para mayor estabilidad en Render
   connectionTimeoutMillis: 2000,
 });
 
@@ -33,10 +37,11 @@ const pool = new Pool({
 const connectWithRetry = () => {
   pool.connect((err, client, release) => {
     if (err) {
-      console.error('❌ Error CRÍTICO de conexión a DB, reintentando en 5s...', err.message);
+      console.error(`[${new Date().toISOString()}] ❌ Error CRÍTICO de conexión a DB:`, err.message);
+      console.log('Reintentando conexión en 5 segundos...');
       setTimeout(connectWithRetry, 5000);
     } else {
-      console.log('✅ Conectado a PostgreSQL en Supabase correctamente');
+      console.log(`[${new Date().toISOString()}] ✅ Conectado a PostgreSQL en Supabase correctamente`);
       release();
     }
   });
