@@ -9,6 +9,9 @@ const jwt = require('jsonwebtoken');
 
 const app = express();
 
+// Útil para servidores detrás de proxies (Railway, Zeabur, Render)
+app.set('trust proxy', 1);
+
 // En producción, podrás cambiar '*' por tu URL de Vercel
 const allowedOrigin = process.env.FRONTEND_URL || '*';
 
@@ -27,11 +30,18 @@ const pool = new Pool({
 });
 
 // Verificar conexión a la base de datos al iniciar
-pool.connect((err, client, release) => {
-  if (err) return console.error('Error adquiriendo cliente de base de datos:', err.stack);
-  console.log('Conectado a PostgreSQL en Supabase correctamente');
-  release();
-});
+const connectWithRetry = () => {
+  pool.connect((err, client, release) => {
+    if (err) {
+      console.error('❌ Error CRÍTICO de conexión a DB, reintentando en 5s...', err.message);
+      setTimeout(connectWithRetry, 5000);
+    } else {
+      console.log('✅ Conectado a PostgreSQL en Supabase correctamente');
+      release();
+    }
+  });
+};
+connectWithRetry();
 
 // Manejador de errores para evitar caídas del servidor
 pool.on('error', (err) => {

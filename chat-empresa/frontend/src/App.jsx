@@ -321,7 +321,9 @@ export default function App() {
                 const isMe = msg.sender_id === currentUser.id;
                 
                 // Priorizar el nombre que viene del JOIN en el backend o buscar en contactos
-                const senderName = isMe ? 'Tú' : (msg.sender_name || contacts.find(c => c.id === msg.sender_id)?.username || 'Usuario');
+                const senderName = isMe 
+                  ? 'Tú' 
+                  : (msg.sender_name || contacts.find(c => c.id === msg.sender_id)?.username || 'Compañero');
 
                 return (
                   <div key={index} style={{ alignSelf: isMe ? 'flex-end' : 'flex-start', maxWidth: '65%', marginBottom: '12px' }}>
